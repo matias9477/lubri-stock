@@ -1,11 +1,12 @@
-import { z } from "zod";
-import { publicProcedure, createTRPCRouter } from "./trpc";
-import { db } from "@/db";
-import { products } from "@/db/schema";
+import { createTRPCRouter } from "./trpc";
+import { getAll } from "./stock/getAll";
+import { create } from "./stock/create";
+import { getBrands } from "./stock/getBrands";
+import { getCategories } from "./stock/getCategories";
 
 export const stockRouter = createTRPCRouter({
-  getAll: publicProcedure.query(async () => {
-    const result = await db.select().from(products);
-    return result;
-  }),
+  getAll,
+  create,
+  getBrands,
+  getCategories,
 });

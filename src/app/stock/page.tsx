@@ -10,6 +10,14 @@ export default function StockPage() {
   return (
     <div className="p-6">
       <h1 className="h-12 text-2xl font-bold mb-4">Stock actual</h1>
+      <div className="mb-4 text-right">
+        <a
+          href="/stock/new"
+          className="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+        >
+          + Agregar producto
+        </a>
+      </div>
       <table className="w-full border-collapse border border-red-300">
         <thead>
           <tr>
