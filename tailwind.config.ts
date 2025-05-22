@@ -1,11 +1,11 @@
-/** @type {import('tailwindcss').Config} */
-
 const config = {
-  content: ["./src/**/*.{js,ts,jsx,tsx}"],
+  content: ["./src/app/**/*.{ts,tsx,css}", "./src/components/**/*.{ts,tsx}"],
   theme: {
     extend: {},
   },
-  plugins: [],
+  plugins: {
+    "@tailwindcss/postcss": {},
+  },
 };
 
 module.exports = config;
