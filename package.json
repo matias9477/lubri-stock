@@ -1,7 +1,8 @@
 {
   "name": "lubri-stock",
   "scripts": {
-    "dev": "next dev"
+    "dev": "next dev",
+    "commit": "cz"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.76.2",
@@ -22,8 +23,15 @@
     "@types/react": "^19.1.5",
     "@types/react-dom": "^19.1.5",
     "autoprefixer": "^10.4.21",
+    "commitizen": "^4.3.1",
+    "cz-conventional-changelog": "^3.3.0",
     "drizzle-kit": "^0.31.1",
     "postcss": "^8.5.3",
     "tailwindcss": "^4.1.7"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
   }
 }
