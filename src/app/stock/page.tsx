@@ -9,6 +9,14 @@ export default function StockPage() {
 
   return (
     <div className="p-6">
+      <div className="mb-2">
+        <a
+          href="/"
+          className="inline-block bg-gray-300 text-gray-800 px-3 py-1 rounded hover:bg-gray-400"
+        >
+          ← Volver al inicio
+        </a>
+      </div>
       <h1 className="h-12 text-2xl font-bold mb-4">Stock actual</h1>
       <div className="mb-4 text-right">
         <a
