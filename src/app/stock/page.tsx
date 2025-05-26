@@ -1,49 +1,54 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { api } from "@/trpc/react";
+import { useRouter } from "next/navigation";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 export default function StockPage() {
   const { data: products, isLoading } = api.stock.getAll.useQuery();
+  const router = useRouter();
 
   if (isLoading) return <p className="p-4">Cargando productos...</p>;
 
   return (
     <div className="p-6">
       <div className="mb-2">
-        <a
-          href="/"
-          className="inline-block bg-gray-300 text-gray-800 px-3 py-1 rounded hover:bg-gray-400"
-        >
+        <Button variant="outline" onClick={() => router.push("/")}>
           ← Volver al inicio
-        </a>
+        </Button>
       </div>
       <h1 className="h-12 text-2xl font-bold mb-4">Stock actual</h1>
       <div className="mb-4 text-right">
-        <a
-          href="/stock/new"
-          className="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-        >
+        <Button onClick={() => router.push("/stock/new")}>
           + Agregar producto
-        </a>
+        </Button>
       </div>
-      <table className="w-full border-collapse border border-red-300">
-        <thead>
-          <tr>
-            <th className="border p-2">Nombre</th>
-            <th className="border p-2">Código</th>
-            <th className="border p-2">Stock</th>
-          </tr>
-        </thead>
-        <tbody>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Nombre</TableHead>
+            <TableHead>Código</TableHead>
+            <TableHead>Stock</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
           {products?.map((product) => (
-            <tr key={product.id}>
-              <td className="border p-2">{product.name}</td>
-              <td className="border p-2">{product.code}</td>
-              <td className="border p-2">{product.stockQuantity}</td>
-            </tr>
+            <TableRow key={product.id}>
+              <TableCell>{product.name}</TableCell>
+              <TableCell>{product.code}</TableCell>
+              <TableCell>{product.stockQuantity}</TableCell>
+            </TableRow>
           ))}
-        </tbody>
-      </table>
+        </TableBody>
+      </Table>
     </div>
   );
 }

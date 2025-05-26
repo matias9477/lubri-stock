@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 
 export default function HomePage() {
@@ -12,12 +13,7 @@ export default function HomePage() {
         <p className="text-gray-600 mb-6">
           Bienvenido al sistema de gestión de stock para El Lubri de Barto.
         </p>
-        <button
-          onClick={() => router.push("/stock")}
-          className="bg-blue-600 text-white px-6 py-2 rounded-lg text-sm font-semibold hover:bg-blue-700 transition"
-        >
-          Ir al stock
-        </button>
+        <Button onClick={() => router.push("/stock")}>Ir al stock</Button>
       </div>
     </main>
   );
