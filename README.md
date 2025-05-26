@@ -1,4 +1,3 @@
-
 # Lubri Stock
 
 Sistema de gestión de stock (con extensión futura a ventas) para "El Lubri de Barto".
@@ -10,6 +9,7 @@ Sistema de gestión de stock (con extensión futura a ventas) para "El Lubri de 
 - **Base de datos**: PostgreSQL
 - **ORM**: Drizzle ORM
 - **Gestor de paquetes**: pnpm
+- **UI Library**: ShadCN
 
 ---
 
@@ -101,6 +101,55 @@ lubri-stock/
 - Las pantallas nuevas van en `src/app/<ruta>`
 - Si se agregan tablas, actualizar el schema en `src/db/schema.ts` y correr `npx drizzle-kit push`
 - Si algo no anda, manden mensaje o revisen los logs en consola antes de bardear al proyecto
+
+## 🧩 Herramientas adicionales
+
+### 📦 shadcn/ui
+
+Usamos [shadcn/ui](https://ui.shadcn.dev) como sistema de componentes sobre TailwindCSS.
+
+Para agregar un componente nuevo:
+
+```bash
+pnpm dlx shadcn-ui@latest add <componente>
+```
+
+Ejemplo para agregar un botón:
+
+```bash
+pnpm dlx shadcn-ui@latest add button
+```
+
+Los componentes se copian en `src/components/ui/` y se pueden editar libremente.
+
+---
+
+### 🧪 Commitizen + Conventional Commits
+
+Usamos [Commitizen](https://github.com/commitizen/cz-cli) para mantener commits consistentes.
+
+Para hacer un commit:
+
+```bash
+pnpm commit
+```
+
+Esto te guía paso a paso para usar formatos como:
+
+```
+feat(stock): agregar dropdowns de marca y categoría
+fix(form): corregir validación de precios negativos
+```
+
+Para configurar un nuevo entorno:
+
+```bash
+pnpm install
+pnpm dlx husky init
+npx husky add .husky/commit-msg 'npx --no -- commitlint --edit "$1"'
+```
+
+---
 
 ---
 
