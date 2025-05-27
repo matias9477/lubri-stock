@@ -24,13 +24,19 @@ import {
 } from "@/components/ui/form";
 
 const formSchema = z.object({
-  name: z.string().min(1),
-  code: z.string().min(1),
-  brandId: z.string().uuid(),
-  categoryId: z.string().uuid(),
-  stockQuantity: z.coerce.number().min(0),
-  listPrice: z.coerce.number().min(0),
-  installedPrice: z.coerce.number().min(0),
+  name: z.string().min(1, { message: "El nombre es requerido" }),
+  code: z.string().min(1, { message: "El código es requerido" }),
+  brandId: z.string().uuid({ message: "La marca es requerida" }),
+  categoryId: z.string().uuid({ message: "La categoría es requerida" }),
+  stockQuantity: z.coerce
+    .number()
+    .min(0, { message: "El stock debe ser mayor a 0" }),
+  listPrice: z.coerce
+    .number()
+    .min(0, { message: "El precio de lista debe ser mayor a 0" }),
+  installedPrice: z.coerce
+    .number()
+    .min(0, { message: "El precio colocado debe ser mayor a 0" }),
 });
 
 type FormValues = z.infer<typeof formSchema>;
