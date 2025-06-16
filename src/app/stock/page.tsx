@@ -41,7 +41,11 @@ export default function StockPage() {
         </TableHeader>
         <TableBody>
           {products?.map((product) => (
-            <TableRow key={product.id}>
+            <TableRow
+              key={product.id}
+              className="cursor-pointer hover:bg-muted"
+              onClick={() => router.push(`/stock/${product.id}`)}
+            >
               <TableCell>{product.name}</TableCell>
               <TableCell>{product.code}</TableCell>
               <TableCell>{product.stockQuantity}</TableCell>
