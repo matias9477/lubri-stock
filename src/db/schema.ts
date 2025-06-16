@@ -7,6 +7,7 @@ import {
   jsonb,
   timestamp,
   primaryKey,
+  unique,
 } from "drizzle-orm/pg-core";
 
 export const brands = pgTable("brands", {
@@ -96,5 +97,22 @@ export const productSuppliers = pgTable(
   },
   (table) => ({
     pk: primaryKey(table.productId, table.supplierId),
+  })
+);
+
+export const productEquivalences = pgTable(
+  "product_equivalences",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    productId: uuid("product_id")
+      .notNull()
+      .references(() => products.id, { onDelete: "cascade" }),
+    equivalentProductId: uuid("equivalent_product_id")
+      .notNull()
+      .references(() => products.id, { onDelete: "cascade" }),
+  },
+  (table) => ({
+    // Para evitar duplicados en ambos sentidos (A-B y B-A)
+    uniquePair: unique().on(table.productId, table.equivalentProductId),
   })
 );
