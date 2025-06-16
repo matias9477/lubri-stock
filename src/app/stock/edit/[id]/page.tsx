@@ -20,10 +20,9 @@ export default function EditProductPage({ params }: EditProductPageProps) {
   const utils = api.useUtils();
   const { id } = params;
 
-  const { data: product, isLoading } = api.stock.getById.useQuery({ id });
-  const { data: productWithEquivalents, isLoading: isLoadingEquivalents } =
+  // const { data: product, isLoading } = api.stock.getById.useQuery({ id });
+  const { data: productWithEquivalents, isLoading } =
     api.stock.getByIdWithEquivalents.useQuery({ id });
-  console.log("productWithEquivalents", productWithEquivalents);
   const { data: brands = [] } = api.stock.getBrands.useQuery();
   const { data: categories = [] } = api.stock.getCategories.useQuery();
   const { data: allProducts = [] } = api.stock.getAll.useQuery();
@@ -36,7 +35,7 @@ export default function EditProductPage({ params }: EditProductPageProps) {
     },
   });
 
-  if (isLoading || !product) {
+  if (isLoading || !productWithEquivalents?.product) {
     return <p className="p-4">Cargando producto...</p>;
   }
 
@@ -73,7 +72,10 @@ export default function EditProductPage({ params }: EditProductPageProps) {
         onSubmit={handleSubmit}
         brands={brands}
         categories={categories}
-        defaultValues={normalizeProductDefaults(product)}
+        defaultValues={normalizeProductDefaults(
+          productWithEquivalents?.product,
+          productWithEquivalents?.equivalents ?? []
+        )}
         isSubmitting={updateProduct.isPending}
         submitLabel="Guardar cambios"
         mode="edit"

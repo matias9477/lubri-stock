@@ -1,8 +1,9 @@
 import { ProductFormValues } from "../_components/ProductForm";
-import { products } from "@/db/schema";
+import { productEquivalences, products } from "@/db/schema";
 
 export function normalizeProductDefaults(
-  product: typeof products.$inferSelect
+  product: typeof products.$inferSelect,
+  equivalents: (typeof productEquivalences.$inferSelect)[]
 ): ProductFormValues {
   return {
     name: product.name,
@@ -14,5 +15,6 @@ export function normalizeProductDefaults(
     installedPrice: product.installedPrice ? Number(product.installedPrice) : 0,
     notes: product.notes ?? "",
     dimensions: product.dimensions ?? 0,
+    equivalentIds: equivalents.map((e) => e.equivalentProductId),
   };
 }
