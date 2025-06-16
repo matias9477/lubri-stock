@@ -33,6 +33,7 @@ export default function NewProductPage() {
         onSubmit={handleSubmit}
         brands={brands}
         categories={categories}
+        mode="create"
         defaultValues={{
           name: "",
           code: "",

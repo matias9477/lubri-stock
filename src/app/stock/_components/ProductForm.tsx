@@ -20,6 +20,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { MultiSelectCombobox } from "@/components/multiselect-combobox";
 
 const formSchema = z.object({
   name: z.string().min(1, { message: "El nombre es requerido" }),
@@ -35,8 +36,9 @@ const formSchema = z.object({
   installedPrice: z.coerce
     .number()
     .min(0, { message: "El precio colocado debe ser mayor a 0" }),
-  notes: z.string().nullable().optional(),
+  notes: z.string().optional().nullable(),
   dimensions: z.unknown().optional(),
+  equivalentIds: z.array(z.string().uuid()).optional(),
 });
 
 export type ProductFormValues = z.infer<typeof formSchema>;
@@ -48,6 +50,8 @@ type Props = {
   categories: { id: string; name: string }[];
   isSubmitting?: boolean;
   submitLabel?: string;
+  mode?: "create" | "edit";
+  allProducts?: { id: string; name: string }[];
 };
 
 export function ProductForm({
@@ -57,6 +61,8 @@ export function ProductForm({
   categories,
   isSubmitting = false,
   submitLabel = "Guardar",
+  mode = "create",
+  allProducts,
 }: Props) {
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(formSchema),
@@ -179,6 +185,26 @@ export function ProductForm({
             </FormItem>
           )}
         />
+        {mode === "edit" && allProducts && (
+          <FormField
+            control={form.control}
+            name="equivalentIds"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Equivalencias</FormLabel>
+                <MultiSelectCombobox
+                  options={allProducts.map((p) => ({
+                    label: p.name,
+                    value: p.id,
+                  }))}
+                  value={field.value || []}
+                  onChange={field.onChange}
+                />
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
         <Button type="submit" disabled={isSubmitting}>
           {submitLabel}
         </Button>

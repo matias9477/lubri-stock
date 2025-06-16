@@ -23,6 +23,8 @@ export default function EditProductPage({ params }: EditProductPageProps) {
   const { data: product, isLoading } = api.stock.getById.useQuery({ id });
   const { data: brands = [] } = api.stock.getBrands.useQuery();
   const { data: categories = [] } = api.stock.getCategories.useQuery();
+  const { data: allProducts = [] } = api.stock.getAll.useQuery();
+  const addEquivalents = api.stock.addEquivalents.useMutation();
 
   const updateProduct = api.stock.update.useMutation({
     onSuccess: () => {
@@ -48,7 +50,17 @@ export default function EditProductPage({ params }: EditProductPageProps) {
       notes: values.notes,
       dimensions: values.dimensions,
     };
-    updateProduct.mutate(payload);
+    updateProduct.mutate(payload, {
+      onSuccess: () => {
+        // Si hay equivalencias nuevas, actualizalas
+        if (values.equivalentIds && values.equivalentIds.length > 0) {
+          addEquivalents.mutate({
+            productId: id,
+            equivalentIds: values.equivalentIds,
+          });
+        }
+      },
+    });
   };
 
   return (
@@ -61,6 +73,8 @@ export default function EditProductPage({ params }: EditProductPageProps) {
         defaultValues={normalizeProductDefaults(product)}
         isSubmitting={updateProduct.isPending}
         submitLabel="Guardar cambios"
+        mode="edit"
+        allProducts={allProducts}
       />
       <Button
         variant="outline"
