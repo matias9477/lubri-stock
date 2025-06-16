@@ -1,3 +1,4 @@
+import { relations } from "drizzle-orm";
 import {
   pgTable,
   uuid,
@@ -32,17 +33,6 @@ export const products = pgTable("products", {
   stockQuantity: integer("stock_quantity").default(0),
   notes: text("notes"),
 });
-
-export const productEquivalents = pgTable(
-  "product_equivalents",
-  {
-    productId: uuid("product_id").references(() => products.id),
-    equivalentId: uuid("equivalent_id").references(() => products.id),
-  },
-  (table) => ({
-    pk: primaryKey(table.productId, table.equivalentId),
-  })
-);
 
 export const vehicles = pgTable("vehicles", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -114,5 +104,19 @@ export const productEquivalences = pgTable(
   (table) => ({
     // Para evitar duplicados en ambos sentidos (A-B y B-A)
     uniquePair: unique().on(table.productId, table.equivalentProductId),
+  })
+);
+
+export const productEquivalencesRelations = relations(
+  productEquivalences,
+  ({ one }) => ({
+    product: one(products, {
+      fields: [productEquivalences.productId],
+      references: [products.id],
+    }),
+    equivalentProduct: one(products, {
+      fields: [productEquivalences.equivalentProductId],
+      references: [products.id],
+    }),
   })
 );
