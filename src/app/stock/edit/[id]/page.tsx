@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { api } from "@/trpc/react";
 import {
   ProductForm,
@@ -9,18 +9,12 @@ import {
 import { Button } from "@/components/ui/button";
 import { normalizeProductDefaults } from "@/app/stock/_utils/normalizeProductDefaults";
 
-interface EditProductPageProps {
-  params: {
-    id: string;
-  };
-}
-
-export default function EditProductPage({ params }: EditProductPageProps) {
+export default function EditProductPage() {
   const router = useRouter();
   const utils = api.useUtils();
-  const { id } = params;
+  const clientParams = useParams();
+  const id = clientParams.id?.toString() ?? "";
 
-  // const { data: product, isLoading } = api.stock.getById.useQuery({ id });
   const { data: productWithEquivalents, isLoading } =
     api.stock.getByIdWithEquivalents.useQuery({ id });
   const { data: brands = [] } = api.stock.getBrands.useQuery();
