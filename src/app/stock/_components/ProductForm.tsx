@@ -35,6 +35,8 @@ const formSchema = z.object({
   installedPrice: z.coerce
     .number()
     .min(0, { message: "El precio colocado debe ser mayor a 0" }),
+  notes: z.string().nullable().optional(),
+  dimensions: z.unknown().optional(),
 });
 
 export type ProductFormValues = z.infer<typeof formSchema>;

@@ -29,7 +29,7 @@ async function ProductDetailPageServer({ id }: { id: string }) {
         <Link href="/stock">
           <Button variant="outline">← Volver al stock</Button>
         </Link>
-        <Link href={`/stock/${product.id}/edit`}>
+        <Link href={`/stock/edit/${product.id}`}>
           <Button variant="default">Editar producto</Button>
         </Link>
       </div>

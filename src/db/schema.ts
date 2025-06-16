@@ -26,7 +26,7 @@ export const products = pgTable("products", {
   code: text("code"),
   brandId: uuid("brand_id").references(() => brands.id),
   categoryId: uuid("category_id").references(() => categories.id),
-  dimensions: jsonb("dimensions"),
+  dimensions: text("dimensions"),
   listPrice: numeric("list_price"),
   installedPrice: numeric("installed_price"),
   stockQuantity: integer("stock_quantity").default(0),
