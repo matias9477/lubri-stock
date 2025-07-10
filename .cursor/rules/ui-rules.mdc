@@ -1,0 +1,197 @@
+# Lubri Stock - UI Guidelines & Project Rules
+
+## 🎨 UI Design System Rules
+
+### Core Design Principles
+
+- **Clean & Flat Design**: Minimalist approach with no shadows or unnecessary visual effects
+- **Dark Mode First**: All components should be designed with dark mode as the primary theme
+- **Monochromatic Palette**: Black and white color scheme with minimal accent colors
+- **Consistent Spacing**: Use Material UI's spacing system (8px base unit)
+
+### 🎯 Button Guidelines
+
+- Use only `variant="contained"` or `variant="outlined"`
+- **Contained buttons**: Black background with white text (handled by theme)
+- **Outlined buttons**: White background with black text and black border (handled by theme)
+- **Size**: Prefer `size="large"` for primary actions, `size="medium"` for secondary
+- Never use uppercase text - keep normal case (handled by theme)
+
+```typescript
+// ✅ CORRECT Button Usage (No custom styling needed!)
+<Button
+  variant="contained"
+  size="large"
+  onClick={handleClick}
+>
+  Primary Action
+</Button>
+
+<Button
+  variant="outlined"
+  size="medium"
+  onClick={handleClick}
+>
+  Secondary Action
+</Button>
+```
+
+### 📦 Component Guidelines
+
+**Box & Container Components:**
+
+- ❌ **NEVER use `boxShadow`** - keep everything flat
+- ✅ Use subtle borders instead of shadows for separation
+- ✅ Prefer `borderRadius: 0` for sharp, clean edges
+- ✅ Use `border: 1px solid` for subtle separation
+
+```typescript
+// ✅ CORRECT Container Usage
+<Box
+  sx={{
+    bgcolor: "background.paper",
+    border: "1px solid",
+    borderColor: "divider",
+    p: 3,
+  }}
+>
+  Content
+</Box>
+```
+
+**Typography:**
+
+- Use Material UI's typography variants consistently
+- Prefer `variant="h4"` for main headings
+- Use `variant="body1"` for regular text
+- Keep font weights minimal (regular and bold only)
+
+### 🌙 Theme Configuration
+
+The project uses a centralized theme in `src/lib/theme.ts` that enforces all design guidelines:
+
+```typescript
+// Import the theme
+import { theme } from "@/lib/theme";
+
+// Use ThemeProvider in your app
+import { ThemeProvider } from "@/lib/ThemeProvider";
+
+// The theme automatically applies:
+// - Dark mode with black/white color scheme
+// - No shadows (flat design)
+// - Sharp corners (no rounded edges)
+// - Consistent spacing and typography
+// - Proper button styling for all variants
+```
+
+### ❌ What to AVOID
+
+- ❌ **Shadows**: Never use `boxShadow` or elevation
+- ❌ **Rounded corners**: Prefer sharp, clean edges
+- ❌ **Gradients**: Keep everything solid colors
+- ❌ **Complex animations**: Simple, subtle transitions only
+- ❌ **Colorful accents**: Stick to black, white, and grays
+- ❌ **Uppercase text**: Use normal case for buttons and text
+- ❌ **Custom button styling**: Use theme defaults instead
+
+### ✅ What to EMBRACE
+
+- ✅ **Flat design**: Clean, minimal interfaces
+- ✅ **High contrast**: Black text on white or white text on black
+- ✅ **Consistent spacing**: Use Material UI's spacing system
+- ✅ **Sharp edges**: No rounded corners for a modern look
+- ✅ **Subtle borders**: Use borders instead of shadows for separation
+- ✅ **Dark backgrounds**: Primary dark theme with light text
+- ✅ **Theme-based styling**: Let the theme handle colors and styling
+
+### 🎨 Color Palette Reference
+
+```typescript
+// Primary Colors
+primary: {
+  main: '#000000',    // Pure black
+  light: '#333333',   // Dark gray
+  dark: '#000000',    // Pure black
+  contrastText: '#ffffff' // White text
+}
+
+// Secondary Colors
+secondary: {
+  main: '#ffffff',    // Pure white
+  light: '#f5f5f5',  // Light gray
+  dark: '#e0e0e0',   // Medium gray
+  contrastText: '#000000' // Black text
+}
+
+// Background Colors (Dark Mode)
+background: {
+  default: '#121212', // Dark background
+  paper: '#1e1e1e',  // Slightly lighter dark
+  secondary: '#2d2d2d' // Medium dark
+}
+
+// Text Colors
+text: {
+  primary: '#ffffff',   // White text
+  secondary: '#b0b0b0', // Light gray text
+  disabled: '#666666'   // Disabled text
+}
+```
+
+## 🚀 Development Rules
+
+### Code Style
+
+- Use early returns whenever possible to make the code more readable
+- Always use Material UI components when possible
+- Use descriptive variable and function names with "handle" prefix for event functions
+- Implement accessibility features on elements
+- Use consts instead of functions: `const toggle = () =>`
+- Add documentation for methods
+
+### File Organization
+
+- All components in `src/components/`
+- UI components in `src/components/ui/`
+- Pages in `src/app/`
+- API routes in `src/app/api/`
+- Database schema in `src/db/`
+- tRPC routers in `src/server/api/`
+- Theme configuration in `src/lib/theme.ts`
+
+### Naming Conventions
+
+- Event functions: `handleClick`, `handleKeyDown`, `handleSubmit`
+- Components: PascalCase (`ProductForm`, `DataTable`)
+- Files: kebab-case (`product-form.tsx`, `data-table.tsx`)
+- Variables: camelCase (`productName`, `isLoading`)
+
+### Import Order
+
+1. React and Next.js imports
+2. Third-party libraries (Material UI, etc.)
+3. Internal components and utilities
+4. Types and interfaces
+
+### Error Handling
+
+- Always handle loading states
+- Provide meaningful error messages
+- Use try-catch blocks for async operations
+- Validate user inputs before submission
+
+### Performance
+
+- Use React.memo for expensive components
+- Implement proper key props for lists
+- Avoid unnecessary re-renders
+- Use proper dependency arrays in useEffect
+
+## 📝 Commit Guidelines
+
+- Use conventional commits: `feat:`, `fix:`, `docs:`, `style:`, `refactor:`
+- Be descriptive but concise
+- Reference issues when applicable
+
+Example: `feat(stock): add black/white button design system`

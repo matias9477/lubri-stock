@@ -1,0 +1,57 @@
+I'll create a comprehensive rule that captures your database schema structure to guide API development. Let me analyze your schema first to create an accurate rule.
+
+Read file: src/db/schema.ts
+Based on your database schema, here's a comprehensive rule to guide API development:
+
+## **Database Schema Rule for API Development**
+
+### **Core Entities & Relationships:**
+
+**1. Products (Main Entity)**
+
+- Primary table with stock management
+- Fields: id, name, code, brandId, categoryId, dimensions, listPrice, installedPrice, stockQuantity, notes
+- Relationships: belongs to Brand, belongs to Category, has many Equivalences, has many StockMovements, has many ProductSuppliers, has many ProductApplications
+
+**2. Product Equivalences (Key Feature)**
+
+- Many-to-many relationship between products
+- Critical for lubricenter business: allows substituting out-of-stock items
+- Fields: id, productId, equivalentProductId
+- Unique constraint prevents duplicate pairs
+- Cascade delete when products are removed
+
+**3. Supporting Entities:**
+
+- **Brands**: id, name (referenced by products)
+- **Categories**: id, name (referenced by products)
+- **Vehicles**: id, brand, model, engine, yearStart, yearEnd
+- **Users**: id, name, email, role, passwordHash
+- **Suppliers**: id, name, contactInfo
+
+**4. Junction Tables:**
+
+- **ProductApplications**: productId ↔ vehicleId (many-to-many)
+- **ProductSuppliers**: productId ↔ supplierId with purchasePrice
+- **StockMovements**: tracks inventory changes with productId, quantity, movementType, reason, date, userId
+
+### **API Development Guidelines:**
+
+**When creating APIs, always consider:**
+
+1. **Product Equivalences Priority**: This is the core differentiator - always include equivalent products in product queries when stock is low
+2. **Stock Management**: Track quantity changes through stockMovements table
+3. **Relationships**: Include related data (brand, category, equivalents) in product responses
+4. **Cascade Behavior**: Product deletions should cascade to equivalences
+5. **Unique Constraints**: Respect unique pairs in equivalences
+6. **Vehicle Compatibility**: Use productApplications to show which vehicles a product fits
+7. **Supplier Information**: Include supplier data for purchasing decisions
+
+**Key Business Logic:**
+
+- When a product is out of stock, automatically suggest equivalents
+- Track all stock movements with reasons and user accountability
+- Maintain bidirectional equivalence relationships (A→B and B→A)
+- Consider vehicle compatibility when suggesting alternatives
+
+This schema supports a complete lubricenter inventory system with the critical product equivalences feature that makes it valuable for Barto's business.
