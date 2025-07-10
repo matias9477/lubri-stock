@@ -3,14 +3,9 @@
 import { Button } from "@/components/ui/button";
 import { api } from "@/trpc/react";
 import { useRouter } from "next/navigation";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { columns } from "./_components/columns";
+import type { ProductRow } from "./_components/columns";
+import { DataTable } from "./_components/DataTable";
 
 export default function StockPage() {
   const { data: products, isLoading } = api.stock.getAll.useQuery();
@@ -31,28 +26,7 @@ export default function StockPage() {
           + Agregar producto
         </Button>
       </div>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Nombre</TableHead>
-            <TableHead>Código</TableHead>
-            <TableHead>Stock</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {products?.map((product) => (
-            <TableRow
-              key={product.id}
-              className="cursor-pointer hover:bg-muted"
-              onClick={() => router.push(`/stock/${product.id}`)}
-            >
-              <TableCell>{product.name}</TableCell>
-              <TableCell>{product.code}</TableCell>
-              <TableCell>{product.stockQuantity}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+      <DataTable<ProductRow> columns={columns} data={products ?? []} />
     </div>
   );
 }
