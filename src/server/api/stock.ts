@@ -7,6 +7,7 @@ import { addEquivalents } from "./stock/addEquivalents";
 import { getEquivalents } from "./stock/getEquivalents";
 import { getById, getByIdWithEquivalents } from "./stock/getById";
 import { update } from "./stock/update";
+import { deleteProduct } from "./stock/delete";
 
 export const stockRouter = createTRPCRouter({
   getAll,
@@ -18,4 +19,5 @@ export const stockRouter = createTRPCRouter({
   getById,
   getByIdWithEquivalents,
   update,
+  delete: deleteProduct,
 });

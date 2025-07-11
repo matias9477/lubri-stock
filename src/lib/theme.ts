@@ -431,6 +431,10 @@ export const theme = createTheme({
       styleOverrides: {
         root: {
           borderRadius: 8, // Rounded corners
+          color: "#ffffff !important", // Always white
+        },
+        circle: {
+          stroke: "#ffffff !important", // Ensure the progress circle is white
         },
       },
     },

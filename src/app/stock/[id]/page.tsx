@@ -1,32 +1,50 @@
+"use client";
+
 import Link from "next/link";
-import { Button, Box, Typography, Container, Paper } from "@mui/material";
-import { db } from "@/db";
-import { products } from "@/db/schema";
-import { eq } from "drizzle-orm";
-import { notFound } from "next/navigation";
+import {
+  Button,
+  Box,
+  Typography,
+  Container,
+  Paper,
+  CircularProgress,
+} from "@mui/material";
+import { api } from "@/trpc/react";
+import { useParams } from "next/navigation";
 import { ProductEquivalents } from "../_components/ProductEquivalents";
 
-export default async function ProductDetailPageWrapper({
-  params,
-}: {
-  params: { id: string };
-}) {
-  const { id } = await params;
+export default function ProductDetailPage() {
+  const params = useParams();
+  const id = params.id?.toString() ?? "";
 
-  return <ProductDetailPageServer id={id} />;
-}
+  // const { data: product, isLoading } = api.stock.getById.useQuery({ id });
 
-async function ProductDetailPageServer({ id }: { id: string }) {
-  const product = await db.query.products.findFirst({
-    where: eq(products.id, id),
-  });
+  const { data, isLoading } = api.stock.getByIdWithEquivalents.useQuery({ id });
 
-  if (!product) return notFound();
+  const { product, equivalents } = data ?? {};
+
+  if (isLoading) {
+    return (
+      <Container sx={{ display: "flex", justifyContent: "center", py: 4 }}>
+        <CircularProgress />
+      </Container>
+    );
+  }
+
+  if (!product) {
+    return (
+      <Container sx={{ py: 3 }}>
+        <Typography variant="h4" color="error">
+          Producto no encontrado
+        </Typography>
+      </Container>
+    );
+  }
 
   return (
     <Container maxWidth="md" sx={{ py: 3 }}>
       <Box sx={{ display: "flex", justifyContent: "space-between", mb: 3 }}>
-        <Button component={Link} href="/stock" variant="outlined">
+        <Button component={Link} href="/stock" variant="contained">
           ← Volver al stock
         </Button>
         <Button
@@ -59,7 +77,7 @@ async function ProductDetailPageServer({ id }: { id: string }) {
         </Box>
       </Paper>
 
-      <ProductEquivalents productId={product.id} />
+      <ProductEquivalents equivalents={equivalents ?? []} />
     </Container>
   );
 }

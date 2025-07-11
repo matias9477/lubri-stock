@@ -1,40 +1,28 @@
 "use client";
 
-import { api } from "@/trpc/react";
-import {
-  Box,
-  Typography,
-  List,
-  ListItem,
-  ListItemText,
-  CircularProgress,
-  Alert,
-} from "@mui/material";
+import { Box, Typography, List, ListItem, Button } from "@mui/material";
+import Link from "next/link";
 
-interface Props {
-  productId: string;
+interface EquivalentProduct {
+  id: string;
+  name: string;
+  code: string | null;
 }
 
-export const ProductEquivalents = ({ productId }: Props) => {
-  const { data, isLoading, error } = api.stock.getEquivalents.useQuery({
-    productId,
-  });
+interface Equivalent {
+  id: string;
+  productId: string;
+  equivalentProductId: string;
+  product: EquivalentProduct;
+  equivalentProduct: EquivalentProduct;
+}
 
-  if (isLoading)
-    return (
-      <Box sx={{ display: "flex", justifyContent: "center", py: 2 }}>
-        <CircularProgress />
-      </Box>
-    );
+interface Props {
+  equivalents: Equivalent[];
+}
 
-  if (error)
-    return (
-      <Alert severity="error" sx={{ mt: 2 }}>
-        Error al cargar equivalencias
-      </Alert>
-    );
-
-  if (!data?.length)
+export const ProductEquivalents = ({ equivalents }: Props) => {
+  if (!equivalents?.length) {
     return (
       <Box sx={{ mt: 3 }}>
         <Typography variant="body2" color="text.secondary">
@@ -42,6 +30,7 @@ export const ProductEquivalents = ({ productId }: Props) => {
         </Typography>
       </Box>
     );
+  }
 
   return (
     <Box sx={{ mt: 3 }}>
@@ -49,11 +38,37 @@ export const ProductEquivalents = ({ productId }: Props) => {
         Equivalencias
       </Typography>
       <List>
-        {data.map((product) => (
-          <ListItem key={product.id} sx={{ py: 0.5 }}>
-            <ListItemText primary={`${product.name} (${product.code})`} />
-          </ListItem>
-        ))}
+        {equivalents.map((equivalent) => {
+          // Determine which product to show (the one that's not the current product)
+          const currentProductId = equivalent.productId;
+          const equivalentProduct =
+            equivalent.product.id === currentProductId
+              ? equivalent.equivalentProduct
+              : equivalent.product;
+
+          return (
+            <ListItem key={equivalent.id} sx={{ py: 0.5 }}>
+              <Button
+                component={Link}
+                href={`/stock/${equivalentProduct.id}`}
+                variant="text"
+                sx={{
+                  textTransform: "none",
+                  p: 0,
+                  minWidth: "auto",
+                  color: "inherit",
+                  justifyContent: "flex-start",
+                  textAlign: "left",
+                  "&:hover": {
+                    backgroundColor: "transparent",
+                  },
+                }}
+              >
+                {equivalentProduct.name} ({equivalentProduct.code})
+              </Button>
+            </ListItem>
+          );
+        })}
       </List>
     </Box>
   );

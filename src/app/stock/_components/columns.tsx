@@ -18,7 +18,9 @@ export const columns: GridColDef[] = [
     headerName: "",
     width: 80,
     sortable: false,
-    renderCell: (params) => <ActionsMenu rowId={params.row.id} />,
+    renderCell: (params) => (
+      <ActionsMenu rowId={params.row.id} productName={params.row.name} />
+    ),
   },
   {
     field: "name",
