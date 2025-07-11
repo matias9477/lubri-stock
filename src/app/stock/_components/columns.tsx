@@ -10,6 +10,7 @@ export type ProductRow = {
   code: string | null;
   stockQuantity: number | null;
   listPrice: string | null;
+  brand?: { name: string } | null;
 };
 
 export const columns: GridColDef[] = [

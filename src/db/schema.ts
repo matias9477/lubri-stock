@@ -107,6 +107,32 @@ export const productEquivalences = pgTable(
   })
 );
 
+// Define relations for products
+export const productsRelations = relations(products, ({ one, many }) => ({
+  brand: one(brands, {
+    fields: [products.brandId],
+    references: [brands.id],
+  }),
+  category: one(categories, {
+    fields: [products.categoryId],
+    references: [categories.id],
+  }),
+  stockMovements: many(stockMovements),
+  productApplications: many(productApplications),
+  productSuppliers: many(productSuppliers),
+  productEquivalences: many(productEquivalences),
+}));
+
+// Define relations for brands
+export const brandsRelations = relations(brands, ({ many }) => ({
+  products: many(products),
+}));
+
+// Define relations for categories
+export const categoriesRelations = relations(categories, ({ many }) => ({
+  products: many(products),
+}));
+
 export const productEquivalencesRelations = relations(
   productEquivalences,
   ({ one }) => ({

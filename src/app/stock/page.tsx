@@ -6,7 +6,10 @@ import {
   Typography,
   Container,
   CircularProgress,
+  TextField,
+  InputAdornment,
 } from "@mui/material";
+import { Search } from "@mui/icons-material";
 import { api } from "@/trpc/react";
 import { useRouter } from "next/navigation";
 import { columns } from "./_components/columns";
@@ -14,9 +17,28 @@ import type { ProductRow } from "./_components/columns";
 import { DataTable } from "./_components/DataTable";
 import { useState, useEffect } from "react";
 
+// Custom debounce hook
+const useDebounce = (value: string, delay: number) => {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
+};
+
 export default function StockPage() {
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(10);
+  const [searchTerm, setSearchTerm] = useState("");
+  const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
   const {
     data: productsData,
@@ -27,17 +49,11 @@ export default function StockPage() {
     pageSize,
     sortBy: "name",
     sortOrder: "asc",
+    search: debouncedSearchTerm || undefined,
   });
 
   const router = useRouter();
   const utils = api.useUtils();
-
-  if (isLoading)
-    return (
-      <Container sx={{ display: "flex", justifyContent: "center", py: 4 }}>
-        <CircularProgress />
-      </Container>
-    );
 
   const products = productsData?.data ?? [];
   const pagination = productsData?.pagination;
@@ -53,6 +69,11 @@ export default function StockPage() {
     setPage(0); // Reset to first page when changing page size
     // Invalidate the query to ensure fresh data
     utils.stock.getAll.invalidate();
+  };
+
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(event.target.value);
+    setPage(0); // Reset to first page when searching
   };
 
   return (
@@ -73,45 +94,52 @@ export default function StockPage() {
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
+          gap: 2,
         }}
       >
-        <Box>
-          <Button
-            variant="outlined"
-            onClick={() => {
-              console.log("Testing API with page 1");
-              handlePageChange(1);
+        <Box sx={{ display: "flex", gap: 2, alignItems: "center", flex: 1 }}>
+          <TextField
+            placeholder="Buscar productos..."
+            value={searchTerm}
+            onChange={handleSearchChange}
+            size="small"
+            sx={{ minWidth: 300 }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Search />
+                </InputAdornment>
+              ),
             }}
-            sx={{ mr: 1 }}
-          >
-            Test Page 1
-          </Button>
-          <Button
-            variant="outlined"
-            onClick={() => {
-              console.log("Testing API with page 0");
-              handlePageChange(0);
-            }}
-          >
-            Test Page 0
-          </Button>
+          />
+          {debouncedSearchTerm && (
+            <Typography variant="body2" color="text.secondary">
+              Incluye equivalencias
+            </Typography>
+          )}
         </Box>
         <Button variant="contained" onClick={() => router.push("/stock/new")}>
           + Agregar producto
         </Button>
       </Box>
 
-      <DataTable<ProductRow>
-        columns={columns}
-        data={products}
-        pagination={{
-          page,
-          pageSize,
-          rowCount: pagination?.total ?? 0,
-          onPageChange: handlePageChange,
-          onPageSizeChange: handlePageSizeChange,
-        }}
-      />
+      {isLoading ? (
+        <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
+          <CircularProgress />
+        </Box>
+      ) : (
+        <DataTable<ProductRow>
+          columns={columns}
+          data={products}
+          pagination={{
+            page,
+            pageSize,
+            rowCount: pagination?.total ?? 0,
+            onPageChange: handlePageChange,
+            onPageSizeChange: handlePageSizeChange,
+          }}
+        />
+      )}
     </Container>
   );
 }
