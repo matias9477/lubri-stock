@@ -2,7 +2,8 @@
   "name": "lubri-stock",
   "scripts": {
     "dev": "next dev",
-    "commit": "cz"
+    "commit": "cz",
+    "seed": "tsx scripts/seed.ts"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -38,6 +39,7 @@
     "drizzle-kit": "^0.31.1",
     "postcss": "^8.5.3",
     "tailwindcss": "^4.1.7",
+    "tsx": "^4.20.3",
     "tw-animate-css": "^1.3.0",
     "typescript": "^5.8.3"
   },

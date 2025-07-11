@@ -25,7 +25,7 @@ export default function EditProductPage() {
     api.stock.getByIdWithEquivalents.useQuery({ id });
   const { data: brands = [] } = api.stock.getBrands.useQuery();
   const { data: categories = [] } = api.stock.getCategories.useQuery();
-  const { data: allProducts = [] } = api.stock.getAll.useQuery();
+  const { data: allProductsResponse } = api.stock.getAll.useQuery();
   const addEquivalents = api.stock.addEquivalents.useMutation();
 
   const updateProduct = api.stock.update.useMutation({
@@ -86,7 +86,9 @@ export default function EditProductPage() {
         isSubmitting={updateProduct.isPending}
         submitLabel="Guardar cambios"
         mode="edit"
-        allProducts={allProducts.filter((p) => p.id !== id)}
+        allProducts={(allProductsResponse?.data ?? []).filter(
+          (p) => p.id !== id
+        )}
       />
 
       <Box sx={{ mt: 3 }}>

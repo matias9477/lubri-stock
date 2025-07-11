@@ -12,9 +12,19 @@ import { useRouter } from "next/navigation";
 import { columns } from "./_components/columns";
 import type { ProductRow } from "./_components/columns";
 import { DataTable } from "./_components/DataTable";
+import { useState } from "react";
 
 export default function StockPage() {
-  const { data: products, isLoading } = api.stock.getAll.useQuery();
+  const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
+
+  const { data: productsData, isLoading } = api.stock.getAll.useQuery({
+    page,
+    pageSize,
+    sortBy: "name",
+    sortOrder: "asc",
+  });
+
   const router = useRouter();
 
   if (isLoading)
@@ -23,6 +33,9 @@ export default function StockPage() {
         <CircularProgress />
       </Container>
     );
+
+  const products = productsData?.data ?? [];
+  const pagination = productsData?.pagination;
 
   return (
     <Container maxWidth="lg" sx={{ py: 3 }}>
@@ -42,7 +55,20 @@ export default function StockPage() {
         </Button>
       </Box>
 
-      <DataTable<ProductRow> columns={columns} data={products ?? []} />
+      <DataTable<ProductRow>
+        columns={columns}
+        data={products}
+        pagination={{
+          page,
+          pageSize,
+          rowCount: pagination?.total ?? 0,
+          onPageChange: (newPage) => setPage(newPage),
+          onPageSizeChange: (newPageSize) => {
+            setPageSize(newPageSize);
+            setPage(0);
+          },
+        }}
+      />
     </Container>
   );
 }
