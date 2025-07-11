@@ -77,7 +77,10 @@ export default function ProductDetailPage() {
         </Box>
       </Paper>
 
-      <ProductEquivalents equivalents={equivalents ?? []} />
+      <ProductEquivalents
+        equivalents={equivalents ?? []}
+        currentProductId={id}
+      />
     </Container>
   );
 }

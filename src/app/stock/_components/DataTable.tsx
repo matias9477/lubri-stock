@@ -23,21 +23,23 @@ export function DataTable<TData>({ data, columns, pagination }: Props<TData>) {
     }
   };
 
+  // Always provide valid numbers
+  const paginationModel: GridPaginationModel = {
+    page: pagination?.page ?? 0,
+    pageSize: pagination?.pageSize ?? 10,
+  };
+
   return (
     <Box sx={{ height: "auto", width: "100%" }}>
       <DataGrid
         rows={data}
         columns={columns}
-        paginationMode={pagination ? "server" : "client"}
-        paginationModel={
-          pagination
-            ? { page: pagination.page, pageSize: pagination.pageSize }
-            : undefined
-        }
+        getRowId={(row) => row.id}
+        pagination
+        paginationMode="server"
+        paginationModel={paginationModel}
         rowCount={pagination?.rowCount ?? data.length}
-        onPaginationModelChange={
-          pagination ? handlePaginationModelChange : undefined
-        }
+        onPaginationModelChange={handlePaginationModelChange}
         pageSizeOptions={[5, 10, 25, 50]}
         disableRowSelectionOnClick
         sx={{

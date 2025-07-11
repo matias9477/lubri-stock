@@ -19,9 +19,13 @@ interface Equivalent {
 
 interface Props {
   equivalents: Equivalent[];
+  currentProductId: string;
 }
 
-export const ProductEquivalents = ({ equivalents }: Props) => {
+export const ProductEquivalents = ({
+  equivalents,
+  currentProductId,
+}: Props) => {
   if (!equivalents?.length) {
     return (
       <Box sx={{ mt: 3 }}>
@@ -40,9 +44,8 @@ export const ProductEquivalents = ({ equivalents }: Props) => {
       <List>
         {equivalents.map((equivalent) => {
           // Determine which product to show (the one that's not the current product)
-          const currentProductId = equivalent.productId;
           const equivalentProduct =
-            equivalent.product.id === currentProductId
+            equivalent.productId === currentProductId
               ? equivalent.equivalentProduct
               : equivalent.product;
 
