@@ -9,7 +9,7 @@ Sistema de gestión de stock (con extensión futura a ventas) para "El Lubri de 
 - **Base de datos**: PostgreSQL
 - **ORM**: Drizzle ORM
 - **Gestor de paquetes**: pnpm
-- **UI Library**: ShadCN
+- **UI Library**: Material UI
 
 ---
 
@@ -118,23 +118,17 @@ lubri-stock/
 
 ## 🧩 Herramientas adicionales
 
-### 📦 shadcn/ui
+### 📦 Material UI
 
-Usamos [shadcn/ui](https://ui.shadcn.dev) como sistema de componentes sobre TailwindCSS.
+Usamos [Material UI](https://mui.com/) como sistema de componentes React.
 
-Para agregar un componente nuevo:
+Para agregar un componente nuevo, simplemente importarlo desde `@mui/material`:
 
-```bash
-pnpm dlx shadcn-ui@latest add <componente>
+```typescript
+import { Button, TextField, Box } from "@mui/material";
 ```
 
-Ejemplo para agregar un botón:
-
-```bash
-pnpm dlx shadcn-ui@latest add button
-```
-
-Los componentes se copian en `src/components/ui/` y se pueden editar libremente.
+Los componentes están disponibles directamente desde la librería y se pueden personalizar con el sistema de temas de Material UI.
 
 ---
 
