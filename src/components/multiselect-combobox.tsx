@@ -48,11 +48,14 @@ export const MultiSelectCombobox = ({
           />
         ))
       }
-      renderOption={(props, option) => (
-        <Box component="li" {...props}>
-          {option.label}
-        </Box>
-      )}
+      renderOption={(props, option) => {
+        const { key, ...otherProps } = props;
+        return (
+          <Box component="li" key={key} {...otherProps}>
+            {option.label}
+          </Box>
+        );
+      }}
     />
   );
 };
