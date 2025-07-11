@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { Button, Box, Typography, Container, Paper } from "@mui/material";
 import { db } from "@/db";
 import { products } from "@/db/schema";
 import { eq } from "drizzle-orm";
@@ -24,26 +24,42 @@ async function ProductDetailPageServer({ id }: { id: string }) {
   if (!product) return notFound();
 
   return (
-    <div className="max-w-2xl mx-auto py-10">
-      <div className="flex justify-between mb-6">
-        <Link href="/stock">
-          <Button variant="outline">← Volver al stock</Button>
-        </Link>
-        <Link href={`/stock/edit/${product.id}`}>
-          <Button variant="default">Editar producto</Button>
-        </Link>
-      </div>
-      <h1 className="text-2xl font-bold mb-4">{product.name}</h1>
-      <p className="text-muted-foreground">Código: {product.code}</p>
-      <p className="text-muted-foreground">Stock: {product.stockQuantity}</p>
-      <p className="text-muted-foreground">
-        Precio lista: ${product.listPrice}
-      </p>
-      <p className="text-muted-foreground">
-        Precio colocado: ${product.installedPrice}
-      </p>
+    <Container maxWidth="md" sx={{ py: 3 }}>
+      <Box sx={{ display: "flex", justifyContent: "space-between", mb: 3 }}>
+        <Button component={Link} href="/stock" variant="outlined">
+          ← Volver al stock
+        </Button>
+        <Button
+          component={Link}
+          href={`/stock/edit/${product.id}`}
+          variant="contained"
+        >
+          Editar producto
+        </Button>
+      </Box>
+
+      <Paper sx={{ p: 3, mb: 3 }}>
+        <Typography variant="h4" component="h1" sx={{ mb: 2 }}>
+          {product.name}
+        </Typography>
+
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+          <Typography variant="body1" color="text.secondary">
+            Código: {product.code}
+          </Typography>
+          <Typography variant="body1" color="text.secondary">
+            Stock: {product.stockQuantity}
+          </Typography>
+          <Typography variant="body1" color="text.secondary">
+            Precio lista: ${product.listPrice}
+          </Typography>
+          <Typography variant="body1" color="text.secondary">
+            Precio colocado: ${product.installedPrice}
+          </Typography>
+        </Box>
+      </Paper>
 
       <ProductEquivalents productId={product.id} />
-    </div>
+    </Container>
   );
 }

@@ -1,6 +1,15 @@
 "use client";
 
 import { api } from "@/trpc/react";
+import {
+  Box,
+  Typography,
+  List,
+  ListItem,
+  ListItemText,
+  CircularProgress,
+  Alert,
+} from "@mui/material";
 
 interface Props {
   productId: string;
@@ -11,21 +20,41 @@ export const ProductEquivalents = ({ productId }: Props) => {
     productId,
   });
 
-  if (isLoading) return <div>Cargando equivalencias...</div>;
-  if (error) return <div>Error al cargar equivalencias</div>;
+  if (isLoading)
+    return (
+      <Box sx={{ display: "flex", justifyContent: "center", py: 2 }}>
+        <CircularProgress />
+      </Box>
+    );
 
-  if (!data?.length) return <div>Sin equivalencias registradas</div>;
+  if (error)
+    return (
+      <Alert severity="error" sx={{ mt: 2 }}>
+        Error al cargar equivalencias
+      </Alert>
+    );
+
+  if (!data?.length)
+    return (
+      <Box sx={{ mt: 3 }}>
+        <Typography variant="body2" color="text.secondary">
+          Sin equivalencias registradas
+        </Typography>
+      </Box>
+    );
 
   return (
-    <div className="mt-6">
-      <h3 className="text-lg font-semibold mb-2">Equivalencias</h3>
-      <ul className="list-disc pl-5 space-y-1">
+    <Box sx={{ mt: 3 }}>
+      <Typography variant="h6" sx={{ mb: 2 }}>
+        Equivalencias
+      </Typography>
+      <List>
         {data.map((product) => (
-          <li key={product.id}>
-            {product.name} ({product.code})
-          </li>
+          <ListItem key={product.id} sx={{ py: 0.5 }}>
+            <ListItemText primary={`${product.name} (${product.code})`} />
+          </ListItem>
         ))}
-      </ul>
-    </div>
+      </List>
+    </Box>
   );
 };

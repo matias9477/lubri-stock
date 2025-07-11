@@ -6,7 +6,7 @@ import {
   ProductForm,
   ProductFormValues,
 } from "@/app/stock/_components/ProductForm";
-import { Button } from "@/components/ui/button";
+import { Button, Box, Typography, Container } from "@mui/material";
 
 export default function NewProductPage() {
   const router = useRouter();
@@ -27,8 +27,11 @@ export default function NewProductPage() {
   };
 
   return (
-    <main className="p-6 max-w-xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4">Nuevo Producto</h1>
+    <Container maxWidth="md" sx={{ py: 3 }}>
+      <Typography variant="h4" component="h1" sx={{ mb: 3 }}>
+        Nuevo Producto
+      </Typography>
+
       <ProductForm
         onSubmit={handleSubmit}
         brands={brands}
@@ -46,14 +49,12 @@ export default function NewProductPage() {
         isSubmitting={createProduct.isPending}
         submitLabel="Crear producto"
       />
-      <Button
-        variant="outline"
-        type="button"
-        className="mt-4"
-        onClick={() => router.push("/stock")}
-      >
-        Volver
-      </Button>
-    </main>
+
+      <Box sx={{ mt: 3 }}>
+        <Button variant="contained" onClick={() => router.push("/stock")}>
+          Volver
+        </Button>
+      </Box>
+    </Container>
   );
 }

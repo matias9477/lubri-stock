@@ -298,25 +298,64 @@ export const theme = createTheme({
         },
       },
     },
-    // TextField overrides
-    MuiTextField: {
+    // OutlinedInput overrides (affects Select, TextField, etc.)
+    MuiOutlinedInput: {
       styleOverrides: {
         root: {
-          "& .MuiOutlinedInput-root": {
-            borderRadius: 8, // Rounded corners
-            color: "#ffffff",
+          borderRadius: 8,
+          color: "#ffffff",
+          backgroundColor: "rgba(255,255,255,0.05)",
+          "& fieldset": {
+            borderColor: "#333333",
           },
-          "& .MuiInputLabel-root": {
-            color: "#ffffff",
+          "&:hover fieldset": {
+            borderColor: "#ffffff",
+          },
+          "&.Mui-focused fieldset": {
+            borderColor: "#ffffff",
+          },
+          "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+            borderColor: "#ffffff",
+          },
+          "& .MuiOutlinedInput-notchedOutline": {
+            borderColor: "#333333",
+          },
+          "&.Mui-error fieldset": {
+            borderColor: "#ff4444",
+          },
+          "&.Mui-error .MuiOutlinedInput-notchedOutline": {
+            borderColor: "#ff4444",
+          },
+        },
+        input: {
+          color: "#ffffff !important", // Force white text in all states
+          "&::placeholder": {
+            color: "#999999",
+            opacity: 1,
           },
         },
       },
     },
-    // Select overrides
+    MuiInputBase: {
+      styleOverrides: {
+        input: {
+          color: "#ffffff !important", // Force white text in all states
+          "&::placeholder": {
+            color: "#999999",
+            opacity: 1,
+          },
+        },
+      },
+    },
+    // Select overrides (for dropdown arrow, etc.)
     MuiSelect: {
       styleOverrides: {
         root: {
-          borderRadius: 8, // Rounded corners
+          borderRadius: 8,
+          color: "#ffffff",
+          backgroundColor: "rgba(255,255,255,0.05)",
+        },
+        icon: {
           color: "#ffffff",
         },
       },
@@ -422,6 +461,19 @@ export const theme = createTheme({
             border: "1px solid",
             borderColor: "#333333",
             borderRadius: 8,
+          },
+        },
+      },
+    },
+    MuiInputLabel: {
+      styleOverrides: {
+        root: {
+          color: "#ffffff !important",
+          "&.Mui-focused": {
+            color: "#ffffff !important",
+          },
+          "&.Mui-error": {
+            color: "#ff4444 !important",
           },
         },
       },

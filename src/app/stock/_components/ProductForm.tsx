@@ -1,25 +1,19 @@
 "use client";
 
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Button } from "@/components/ui/button";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import {
-  Form,
+  Button,
+  TextField,
   FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+  InputLabel,
+  Select,
+  MenuItem,
+  FormHelperText,
+  Box,
+  Typography,
+} from "@mui/material";
 import { MultiSelectCombobox } from "@/components/multiselect-combobox";
 
 const formSchema = z.object({
@@ -54,7 +48,7 @@ type Props = {
   allProducts?: { id: string; name: string }[];
 };
 
-export function ProductForm({
+export const ProductForm = ({
   onSubmit,
   defaultValues,
   brands,
@@ -63,152 +57,170 @@ export function ProductForm({
   submitLabel = "Guardar",
   mode = "create",
   allProducts,
-}: Props) {
-  const form = useForm<ProductFormValues>({
+}: Props) => {
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<ProductFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues,
   });
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Nombre</FormLabel>
-              <FormControl>
-                <Input {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="code"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Código</FormLabel>
-              <FormControl>
-                <Input {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="brandId"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Marca</FormLabel>
-              <Select onValueChange={field.onChange} value={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Seleccioná una marca" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {brands.map((b) => (
-                    <SelectItem key={b.id} value={b.id}>
-                      {b.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="categoryId"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Categoría</FormLabel>
-              <Select onValueChange={field.onChange} value={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Seleccioná una categoría" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {categories.map((c) => (
-                    <SelectItem key={c.id} value={c.id}>
-                      {c.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="stockQuantity"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Stock</FormLabel>
-              <FormControl>
-                <Input type="number" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="listPrice"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Precio de lista</FormLabel>
-              <FormControl>
-                <Input type="number" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="installedPrice"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Precio colocado</FormLabel>
-              <FormControl>
-                <Input type="number" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        {mode === "edit" && allProducts && (
-          <FormField
-            control={form.control}
-            name="equivalentIds"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Equivalencias</FormLabel>
-                <MultiSelectCombobox
-                  options={allProducts.map((p) => ({
-                    label: p.name,
-                    value: p.id,
-                  }))}
-                  value={field.value || []}
-                  onChange={field.onChange}
-                />
-                <FormMessage />
-              </FormItem>
-            )}
+    <Box
+      component="form"
+      onSubmit={handleSubmit(onSubmit)}
+      sx={{ display: "flex", flexDirection: "column", gap: 3 }}
+    >
+      <Controller
+        control={control}
+        name="name"
+        render={({ field }) => (
+          <TextField
+            {...field}
+            label="Nombre"
+            variant="outlined"
+            fullWidth
+            error={!!errors.name}
+            helperText={errors.name?.message}
           />
         )}
-        <Button type="submit" disabled={isSubmitting}>
-          {submitLabel}
-        </Button>
-      </form>
-    </Form>
+      />
+
+      <Controller
+        control={control}
+        name="code"
+        render={({ field }) => (
+          <TextField
+            {...field}
+            label="Código"
+            variant="outlined"
+            fullWidth
+            error={!!errors.code}
+            helperText={errors.code?.message}
+          />
+        )}
+      />
+
+      <Controller
+        control={control}
+        name="brandId"
+        render={({ field }) => (
+          <FormControl fullWidth error={!!errors.brandId}>
+            <InputLabel>Marca</InputLabel>
+            <Select {...field} label="Marca">
+              {brands.map((brand) => (
+                <MenuItem key={brand.id} value={brand.id}>
+                  {brand.name}
+                </MenuItem>
+              ))}
+            </Select>
+            {errors.brandId && (
+              <FormHelperText>{errors.brandId.message}</FormHelperText>
+            )}
+          </FormControl>
+        )}
+      />
+
+      <Controller
+        control={control}
+        name="categoryId"
+        render={({ field }) => (
+          <FormControl fullWidth error={!!errors.categoryId}>
+            <InputLabel>Categoría</InputLabel>
+            <Select {...field} label="Categoría">
+              {categories.map((category) => (
+                <MenuItem key={category.id} value={category.id}>
+                  {category.name}
+                </MenuItem>
+              ))}
+            </Select>
+            {errors.categoryId && (
+              <FormHelperText>{errors.categoryId.message}</FormHelperText>
+            )}
+          </FormControl>
+        )}
+      />
+
+      <Controller
+        control={control}
+        name="stockQuantity"
+        render={({ field }) => (
+          <TextField
+            {...field}
+            label="Stock"
+            type="number"
+            variant="outlined"
+            fullWidth
+            error={!!errors.stockQuantity}
+            helperText={errors.stockQuantity?.message}
+          />
+        )}
+      />
+
+      <Controller
+        control={control}
+        name="listPrice"
+        render={({ field }) => (
+          <TextField
+            {...field}
+            label="Precio de lista"
+            type="number"
+            variant="outlined"
+            fullWidth
+            error={!!errors.listPrice}
+            helperText={errors.listPrice?.message}
+          />
+        )}
+      />
+
+      <Controller
+        control={control}
+        name="installedPrice"
+        render={({ field }) => (
+          <TextField
+            {...field}
+            label="Precio colocado"
+            type="number"
+            variant="outlined"
+            fullWidth
+            error={!!errors.installedPrice}
+            helperText={errors.installedPrice?.message}
+          />
+        )}
+      />
+
+      {mode === "edit" && allProducts && (
+        <Controller
+          control={control}
+          name="equivalentIds"
+          render={({ field }) => (
+            <Box>
+              <Typography variant="body2" sx={{ mb: 1 }}>
+                Equivalencias
+              </Typography>
+              <MultiSelectCombobox
+                options={allProducts.map((p) => ({
+                  label: p.name,
+                  value: p.id,
+                }))}
+                value={field.value || []}
+                onChange={field.onChange}
+              />
+            </Box>
+          )}
+        />
+      )}
+
+      <Button
+        type="submit"
+        variant="contained"
+        disabled={isSubmitting}
+        sx={{ mt: 2 }}
+      >
+        {submitLabel}
+      </Button>
+    </Box>
   );
-}
+};

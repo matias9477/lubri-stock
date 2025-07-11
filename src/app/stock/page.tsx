@@ -1,6 +1,12 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import {
+  Button,
+  Box,
+  Typography,
+  Container,
+  CircularProgress,
+} from "@mui/material";
 import { api } from "@/trpc/react";
 import { useRouter } from "next/navigation";
 import { columns } from "./_components/columns";
@@ -11,22 +17,32 @@ export default function StockPage() {
   const { data: products, isLoading } = api.stock.getAll.useQuery();
   const router = useRouter();
 
-  if (isLoading) return <p className="p-4">Cargando productos...</p>;
+  if (isLoading)
+    return (
+      <Container sx={{ display: "flex", justifyContent: "center", py: 4 }}>
+        <CircularProgress />
+      </Container>
+    );
 
   return (
-    <div className="p-6">
-      <div className="mb-2">
-        <Button variant="outline" onClick={() => router.push("/")}>
+    <Container maxWidth="lg" sx={{ py: 3 }}>
+      <Box sx={{ mb: 2 }}>
+        <Button variant="contained" onClick={() => router.push("/")}>
           ← Volver al inicio
         </Button>
-      </div>
-      <h1 className="h-12 text-2xl font-bold mb-4">Stock actual</h1>
-      <div className="mb-4 text-right">
-        <Button onClick={() => router.push("/stock/new")}>
+      </Box>
+
+      <Typography variant="h4" component="h1" sx={{ mb: 3 }}>
+        Stock actual
+      </Typography>
+
+      <Box sx={{ mb: 3, display: "flex", justifyContent: "flex-end" }}>
+        <Button variant="contained" onClick={() => router.push("/stock/new")}>
           + Agregar producto
         </Button>
-      </div>
+      </Box>
+
       <DataTable<ProductRow> columns={columns} data={products ?? []} />
-    </div>
+    </Container>
   );
 }

@@ -6,7 +6,13 @@ import {
   ProductForm,
   ProductFormValues,
 } from "@/app/stock/_components/ProductForm";
-import { Button } from "@/components/ui/button";
+import {
+  Button,
+  Box,
+  Typography,
+  Container,
+  CircularProgress,
+} from "@mui/material";
 import { normalizeProductDefaults } from "@/app/stock/_utils/normalizeProductDefaults";
 
 export default function EditProductPage() {
@@ -30,7 +36,11 @@ export default function EditProductPage() {
   });
 
   if (isLoading || !productWithEquivalents?.product) {
-    return <p className="p-4">Cargando producto...</p>;
+    return (
+      <Container sx={{ display: "flex", justifyContent: "center", py: 4 }}>
+        <CircularProgress />
+      </Container>
+    );
   }
 
   const handleSubmit = (values: ProductFormValues) => {
@@ -60,8 +70,11 @@ export default function EditProductPage() {
   };
 
   return (
-    <main className="p-6 max-w-xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4">Editar Producto</h1>
+    <Container maxWidth="md" sx={{ py: 3 }}>
+      <Typography variant="h4" component="h1" sx={{ mb: 3 }}>
+        Editar Producto
+      </Typography>
+
       <ProductForm
         onSubmit={handleSubmit}
         brands={brands}
@@ -75,14 +88,12 @@ export default function EditProductPage() {
         mode="edit"
         allProducts={allProducts.filter((p) => p.id !== id)}
       />
-      <Button
-        variant="outline"
-        type="button"
-        className="mt-4"
-        onClick={() => router.push("/stock")}
-      >
-        Volver
-      </Button>
-    </main>
+
+      <Box sx={{ mt: 3 }}>
+        <Button variant="contained" onClick={() => router.push("/stock")}>
+          Volver
+        </Button>
+      </Box>
+    </Container>
   );
 }
