@@ -1,6 +1,9 @@
 import { Providers } from "./Providers";
 import "./globals.css";
 import type { Metadata } from "next";
+import { Navbar } from "@/components/Navbar";
+import { NavbarProvider } from "@/components/NavbarContext";
+import { ContentWrapper } from "@/components/ContentWrapper";
 
 export const metadata: Metadata = {
   title: "Lubri Stock",
@@ -16,7 +19,14 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body>
-        <Providers>{children}</Providers>
+        <Providers>
+          <NavbarProvider>
+            <div style={{ display: "flex", minHeight: "100vh" }}>
+              <ContentWrapper>{children}</ContentWrapper>
+              <Navbar />
+            </div>
+          </NavbarProvider>
+        </Providers>
       </body>
     </html>
   );
