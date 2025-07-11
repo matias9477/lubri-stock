@@ -1,0 +1,88 @@
+---
+description: Generate navigation
+alwaysApply: false
+---
+
+## Next.js Navigation Best Practices
+
+### ✅ Use These Methods:
+
+- **`useRouter().push()`** - For programmatic client-side navigation
+- **`<Link>` component** - For accessible, SEO-friendly links
+- **`router.replace()`** - When you don't want to add to browser history
+- **`router.back()`** - For going back in history
+- **`router.forward()`** - For going forward in history
+
+### ❌ Avoid These Methods:
+
+- **`window.location.href`** - Causes full page reload, loses React state
+- **`window.location.replace()`** - Same issues as href
+- **`document.location`** - Avoid direct DOM manipulation
+
+### 📝 Code Examples:
+
+```tsx
+// ✅ Good - Client-side navigation
+import { useRouter } from "next/navigation";
+
+const router = useRouter();
+router.push(`/stock/edit/${id}`);
+
+// ✅ Good - Link component
+import Link from "next/link";
+
+<Link href={`/stock/edit/${id}`}>
+  <Button>Edit</Button>
+</Link>;
+
+// ❌ Bad - Full page reload
+window.location.href = `/stock/edit/${id}`;
+```
+
+### �� When to Use Each:
+
+- **`router.push()`** - Programmatic navigation (buttons, menu items)
+- **`<Link>`** - Navigation links, anchor tags
+- **`router.replace()`** - Login/logout flows, redirects
+- **`window.location`** - Only for external URLs or when you need a full reload## Next.js Navigation Best Practices
+
+### ✅ Use These Methods:
+
+- **`useRouter().push()`** - For programmatic client-side navigation
+- **`<Link>` component** - For accessible, SEO-friendly links
+- **`router.replace()`** - When you don't want to add to browser history
+- **`router.back()`** - For going back in history
+- **`router.forward()`** - For going forward in history
+
+### ❌ Avoid These Methods:
+
+- **`window.location.href`** - Causes full page reload, loses React state
+- **`window.location.replace()`** - Same issues as href
+- **`document.location`** - Avoid direct DOM manipulation
+
+### 📝 Code Examples:
+
+```tsx
+// ✅ Good - Client-side navigation
+import { useRouter } from "next/navigation";
+
+const router = useRouter();
+router.push(`/stock/edit/${id}`);
+
+// ✅ Good - Link component
+import Link from "next/link";
+
+<Link href={`/stock/edit/${id}`}>
+  <Button>Edit</Button>
+</Link>;
+
+// ❌ Bad - Full page reload
+window.location.href = `/stock/edit/${id}`;
+```
+
+### �� When to Use Each:
+
+- **`router.push()`** - Programmatic navigation (buttons, menu items)
+- **`<Link>`** - Navigation links, anchor tags
+- **`router.replace()`** - Login/logout flows, redirects
+- **`window.location`** - Only for external URLs or when you need a full reload
