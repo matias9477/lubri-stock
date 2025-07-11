@@ -52,7 +52,21 @@ createdb lubristock
 npx drizzle-kit push --config drizzle.config.ts
 ```
 
-### 6. Levantar el proyecto
+### 6. Seedear la base de datos (opcional)
+
+Para poblar la base de datos con datos de ejemplo:
+
+```bash
+psql lubristock -f scripts/seed.sql
+```
+
+Esto agregará:
+
+- Marcas populares (Bosch, NGK, Mann, etc.)
+- Categorías de productos (Filtros, Aceites, Frenos, etc.)
+- Productos de ejemplo con equivalencias
+
+### 7. Levantar el proyecto
 
 ```bash
 pnpm dev
