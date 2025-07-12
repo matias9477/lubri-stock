@@ -19,17 +19,25 @@ import {
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import AddIcon from "@mui/icons-material/Add";
 import { useRouter } from "next/navigation";
 import { api } from "@/trpc/react";
+import { AddMovementDialog } from "./AddMovementDialog";
 
 interface ActionsMenuProps {
   rowId: string;
   productName: string;
+  currentStock?: number;
 }
 
-export const ActionsMenu = ({ rowId, productName }: ActionsMenuProps) => {
+export const ActionsMenu = ({
+  rowId,
+  productName,
+  currentStock = 0,
+}: ActionsMenuProps) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [addMovementDialogOpen, setAddMovementDialogOpen] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">(
@@ -82,6 +90,15 @@ export const ActionsMenu = ({ rowId, productName }: ActionsMenuProps) => {
     setDeleteDialogOpen(false);
   };
 
+  const handleAddMovement = () => {
+    handleClose();
+    setAddMovementDialogOpen(true);
+  };
+
+  const handleAddMovementClose = () => {
+    setAddMovementDialogOpen(false);
+  };
+
   const handleSnackbarClose = () => {
     setSnackbarOpen(false);
   };
@@ -113,6 +130,12 @@ export const ActionsMenu = ({ rowId, productName }: ActionsMenuProps) => {
             <EditIcon fontSize="small" />
           </ListItemIcon>
           <ListItemText>Editar</ListItemText>
+        </MenuItem>
+        <MenuItem onClick={handleAddMovement}>
+          <ListItemIcon>
+            <AddIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>Agregar Movimiento</ListItemText>
         </MenuItem>
         <MenuItem onClick={handleDeleteClick}>
           <ListItemIcon>
@@ -171,6 +194,14 @@ export const ActionsMenu = ({ rowId, productName }: ActionsMenuProps) => {
           {snackbarMessage}
         </Alert>
       </Snackbar>
+
+      <AddMovementDialog
+        open={addMovementDialogOpen}
+        onClose={handleAddMovementClose}
+        productId={rowId}
+        productName={productName}
+        currentStock={currentStock}
+      />
     </>
   );
 };

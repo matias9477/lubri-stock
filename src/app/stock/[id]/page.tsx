@@ -12,6 +12,7 @@ import {
 import { api } from "@/trpc/react";
 import { useParams } from "next/navigation";
 import { ProductEquivalents } from "../_components/ProductEquivalents";
+import { MovementHistory } from "../_components/MovementHistory";
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -81,6 +82,14 @@ export default function ProductDetailPage() {
         equivalents={equivalents ?? []}
         currentProductId={id}
       />
+
+      <Paper sx={{ p: 3, mt: 3 }}>
+        <MovementHistory
+          productId={product.id}
+          productName={product.name}
+          currentStock={Number(product.stockQuantity) || 0}
+        />
+      </Paper>
     </Container>
   );
 }

@@ -1,3 +1,333 @@
+---
+alwaysApply: true
+---
+
+# API Development Best Practices
+
+## File Organization
+
+### Directory Structure
+
+```
+src/server/api/
+├── router.ts          # Main router composition
+├── trpc.ts           # tRPC configuration
+├── stock/            # Feature-specific endpoints
+│   ├── create.ts
+│   ├── getAll.ts
+│   ├── getById.ts
+│   ├── update.ts
+│   └── delete.ts
+└── [other-features]/
+```
+
+### Naming Conventions
+
+- **Files**: Use kebab-case for file names (`get-by-id.ts`)
+- **Functions**: Use camelCase for function names (`getById`, `createProduct`)
+- **Types**: Use PascalCase for types and interfaces (`ProductData`, `CreateProductInput`)
+- **Constants**: Use UPPER_SNAKE_CASE for constants (`MAX_PAGE_SIZE`)
+
+## Input Validation
+
+### Zod Schema Standards
+
+```typescript
+// ✅ Good - Comprehensive validation
+const createProductSchema = z.object({
+  name: z.string().min(1, "Name is required").max(100, "Name too long"),
+  code: z.string().optional(),
+  brandId: z.string().uuid("Invalid brand ID"),
+  categoryId: z.string().uuid("Invalid category ID"),
+  listPrice: z.number().positive("Price must be positive").optional(),
+  stockQuantity: z.number().int().min(0, "Stock cannot be negative"),
+});
+
+// ❌ Bad - Weak validation
+const createProductSchema = z.object({
+  name: z.string(),
+  price: z.number(),
+});
+```
+
+### Validation Rules
+
+- Always validate UUIDs with `z.string().uuid()`
+- Use meaningful error messages
+- Validate numeric ranges and constraints
+- Handle optional fields explicitly
+- Use `.optional()` for nullable fields
+
+## Error Handling
+
+### Standard Error Responses
+
+```typescript
+// ✅ Good - Consistent error handling
+export const getById = publicProcedure
+  .input(z.object({ id: z.string().uuid() }))
+  .query(async ({ input }) => {
+    try {
+      const product = await db.query.products.findFirst({
+        where: eq(products.id, input.id),
+      });
+
+      if (!product) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Product not found",
+        });
+      }
+
+      return product;
+    } catch (error) {
+      if (error instanceof TRPCError) throw error;
+
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Failed to fetch product",
+      });
+    }
+  });
+```
+
+### Error Codes
+
+- `BAD_REQUEST`: Invalid input data
+- `UNAUTHORIZED`: Authentication required
+- `FORBIDDEN`: Insufficient permissions
+- `NOT_FOUND`: Resource not found
+- `CONFLICT`: Resource already exists
+- `INTERNAL_SERVER_ERROR`: Server-side errors
+
+## Response Types
+
+### Consistent Response Structure
+
+```typescript
+// ✅ Good - Typed responses
+export type ProductResponse = {
+  id: string;
+  name: string;
+  code?: string;
+  brandId?: string;
+  categoryId?: string;
+  listPrice?: number;
+  stockQuantity: number;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+// ✅ Good - Paginated responses
+export type PaginatedResponse<T> = {
+  data: T[];
+  pagination: {
+    page: number;
+    pageSize: number;
+    total: number;
+    totalPages: number;
+  };
+};
+```
+
+## Router Composition
+
+### Main Router Structure
+
+```typescript
+// src/server/api/router.ts
+import { router } from "./trpc";
+import { stockRouter } from "./stock";
+
+export const appRouter = router({
+  stock: stockRouter,
+  // Add other feature routers here
+});
+
+export type AppRouter = typeof appRouter;
+```
+
+### Feature Router Structure
+
+```typescript
+// src/server/api/stock/index.ts
+import { router } from "../trpc";
+import { create } from "./create";
+import { getAll } from "./getAll";
+import { getById } from "./getById";
+import { update } from "./update";
+import { delete: deleteProduct } from "./delete";
+
+export const stockRouter = router({
+  create,
+  getAll,
+  getById,
+  update,
+  delete: deleteProduct,
+});
+```
+
+## Endpoint Categories
+
+### CRUD Operations
+
+1. **Create**: `POST /api/stock` - Create new resource
+2. **Read**: `GET /api/stock` - List resources, `GET /api/stock/[id]` - Get single resource
+3. **Update**: `PUT /api/stock/[id]` - Update resource
+4. **Delete**: `DELETE /api/stock/[id]` - Delete resource
+
+### Special Operations
+
+- **Bulk Operations**: `POST /api/stock/bulk-create`, `PUT /api/stock/bulk-update`
+- **Search/Filter**: `GET /api/stock/search?q=filter&category=id`
+- **Export**: `GET /api/stock/export?format=csv`
+
+## Best Practices
+
+### Performance
+
+- Use database indexes for frequently queried fields
+- Implement pagination for large datasets
+- Use `select()` to limit returned fields
+- Cache frequently accessed data
+
+### Security
+
+- Validate all inputs with Zod
+- Sanitize user inputs
+- Use parameterized queries (Drizzle handles this)
+- Implement proper authentication/authorization
+- Rate limit sensitive endpoints
+
+### Code Quality
+
+- Write comprehensive JSDoc comments
+- Use TypeScript strictly (no `any` types)
+- Follow DRY principle
+- Keep functions small and focused
+- Use meaningful variable names
+
+### Testing
+
+- Write unit tests for all endpoints
+- Test error scenarios
+- Mock database calls in tests
+- Test input validation edge cases
+
+## Database Queries
+
+### Query Patterns
+
+```typescript
+// ✅ Good - Efficient queries with relations
+const products = await db.query.products.findMany({
+  with: {
+    brand: true,
+    category: true,
+  },
+  where: (products) => eq(products.categoryId, categoryId),
+  limit: 50,
+  offset: page * pageSize,
+});
+
+// ✅ Good - Complex filtering
+const products = await db.query.products.findMany({
+  where: (products) =>
+    and(
+      eq(products.categoryId, categoryId),
+      gte(products.stockQuantity, 1),
+      like(products.name, `%${searchTerm}%`)
+    ),
+});
+```
+
+### Transaction Usage
+
+```typescript
+// ✅ Good - Use transactions for multi-step operations
+export const createWithEquivalents = publicProcedure
+  .input(createProductWithEquivalentsSchema)
+  .mutation(async ({ input }) => {
+    return await db.transaction(async (tx) => {
+      const product = await tx
+        .insert(products)
+        .values(input.product)
+        .returning();
+
+      if (input.equivalents.length > 0) {
+        await tx.insert(productEquivalences).values(
+          input.equivalents.map((eq) => ({
+            productId: product[0].id,
+            equivalentProductId: eq.id,
+          }))
+        );
+      }
+
+      return product[0];
+    });
+  });
+```
+
+## Documentation Standards
+
+### Function Documentation
+
+```typescript
+/**
+ * Creates a new product with optional equivalents
+ * @param input - Product data and optional equivalents
+ * @returns The created product with full details
+ * @throws {TRPCError} When validation fails or database error occurs
+ */
+export const createProduct = publicProcedure
+  .input(createProductSchema)
+  .mutation(async ({ input }) => {
+    // Implementation
+  });
+```
+
+### Schema Documentation
+
+```typescript
+/**
+ * Schema for creating a new product
+ * @property name - Product name (required, max 100 chars)
+ * @property code - Product code (optional)
+ * @property brandId - Brand UUID (required)
+ * @property categoryId - Category UUID (required)
+ * @property listPrice - List price (optional, must be positive)
+ * @property stockQuantity - Initial stock quantity (default: 0)
+ */
+const createProductSchema = z.object({
+  name: z.string().min(1).max(100),
+  code: z.string().optional(),
+  brandId: z.string().uuid(),
+  categoryId: z.string().uuid(),
+  listPrice: z.number().positive().optional(),
+  stockQuantity: z.number().int().min(0).default(0),
+});
+```
+
+## Migration Guidelines
+
+### Breaking Changes
+
+- Never remove fields without deprecation period
+- Use versioning for major API changes
+- Document breaking changes clearly
+- Provide migration guides for clients
+
+### Backward Compatibility
+
+- Keep old endpoints during transition periods
+- Use feature flags for gradual rollouts
+- Maintain multiple API versions if necessary
+- Document deprecated endpoints clearly
+
+### Directory Structure
+
+---
+
 # API Development Best Practices
 
 ## File Organization

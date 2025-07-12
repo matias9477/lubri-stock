@@ -1,5 +1,5 @@
 ---
-alwaysApply: false
+alwaysApply: true
 ---
 
 I'll create a comprehensive rule that captures your database schema structure to guide API development. Let me analyze your schema first to create an accurate rule.

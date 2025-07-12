@@ -8,6 +8,9 @@ import { getEquivalents } from "./stock/getEquivalents";
 import { getById, getByIdWithEquivalents } from "./stock/getById";
 import { update } from "./stock/update";
 import { deleteProduct } from "./stock/delete";
+import { getMovements } from "./stock/getMovements";
+import { createMovement } from "./stock/createMovement";
+import { getMovementTypes } from "./stock/getMovementTypes";
 
 export const stockRouter = createTRPCRouter({
   getAll,
@@ -20,4 +23,7 @@ export const stockRouter = createTRPCRouter({
   getByIdWithEquivalents,
   update,
   delete: deleteProduct,
+  getMovements,
+  createMovement,
+  getMovementTypes,
 });

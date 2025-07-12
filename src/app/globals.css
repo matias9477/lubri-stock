@@ -118,3 +118,14 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Stock movement quantity styling */
+.positive-quantity {
+  color: #4caf50 !important;
+  font-weight: 500;
+}
+
+.negative-quantity {
+  color: #f44336 !important;
+  font-weight: 500;
+}

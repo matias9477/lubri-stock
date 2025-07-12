@@ -20,7 +20,11 @@ export const columns: GridColDef[] = [
     width: 80,
     sortable: false,
     renderCell: (params) => (
-      <ActionsMenu rowId={params.row.id} productName={params.row.name} />
+      <ActionsMenu
+        rowId={params.row.id}
+        productName={params.row.name}
+        currentStock={params.row.stockQuantity || 0}
+      />
     ),
   },
   {
