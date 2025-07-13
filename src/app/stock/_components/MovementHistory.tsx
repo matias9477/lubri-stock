@@ -62,17 +62,37 @@ export const MovementHistory = ({
   const {
     data: movementsData,
     isLoading,
-    refetch,
-  } = api.stock.getMovements.useQuery({
-    productId,
-    page,
-    pageSize,
-    startDate: startDate || undefined,
-    endDate: endDate || undefined,
-    movementType: movementType || undefined,
-  });
+    isFetching,
+    isError,
+    error,
+  } = api.stock.getMovements.useQuery(
+    {
+      productId,
+      page,
+      pageSize,
+      startDate: startDate || undefined,
+      endDate: endDate || undefined,
+      movementType: movementType || undefined,
+    },
+    {
+      // @ts-expect-error: keepPreviousData is a TanStack Query option
+      keepPreviousData: true,
+      staleTime: 2 * 60 * 1000,
+      enabled: !!productId,
+    }
+  );
 
-  const { data: movementTypes } = api.stock.getMovementTypes.useQuery();
+  const {
+    data: movementTypes,
+    isLoading: isLoadingTypes,
+    isFetching: isFetchingTypes,
+    isError: isErrorTypes,
+    error: errorTypes,
+  } = api.stock.getMovementTypes.useQuery(undefined, {
+    // @ts-expect-error: keepPreviousData is a TanStack Query option
+    keepPreviousData: true,
+    staleTime: 2 * 60 * 1000,
+  });
 
   const movements =
     movementsData?.data?.map((movement) => ({
@@ -147,8 +167,26 @@ export const MovementHistory = ({
   };
 
   const handleMovementSuccess = () => {
-    refetch();
+    // No need to refetch, TanStack Query will handle it
   };
+
+  if (isLoading || isLoadingTypes) {
+    return (
+      <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (isError || isErrorTypes) {
+    return (
+      <Alert severity="error">
+        Error al cargar movimientos:{" "}
+        {error instanceof Error ? error.message : ""}{" "}
+        {errorTypes instanceof Error ? errorTypes.message : ""}
+      </Alert>
+    );
+  }
 
   return (
     <Box>
@@ -207,11 +245,7 @@ export const MovementHistory = ({
         </FormControl>
       </Box>
 
-      {isLoading ? (
-        <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
-          <CircularProgress />
-        </Box>
-      ) : movements.length === 0 ? (
+      {movements.length === 0 ? (
         <Alert severity="info">
           No hay movimientos registrados para este producto.
         </Alert>
@@ -227,6 +261,13 @@ export const MovementHistory = ({
             onPageSizeChange: handlePageSizeChange,
           }}
         />
+      )}
+
+      {/* Show background loading indicator */}
+      {(isFetching || isFetchingTypes) && !isLoading && !isLoadingTypes && (
+        <Box sx={{ position: "fixed", top: 16, right: 16 }}>
+          <CircularProgress size={24} />
+        </Box>
       )}
 
       <AddMovementDialog

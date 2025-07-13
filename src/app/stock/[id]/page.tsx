@@ -8,6 +8,7 @@ import {
   Container,
   Paper,
   CircularProgress,
+  Alert,
 } from "@mui/material";
 import { api } from "@/trpc/react";
 import { useParams } from "next/navigation";
@@ -18,9 +19,16 @@ export default function ProductDetailPage() {
   const params = useParams();
   const id = params.id?.toString() ?? "";
 
-  // const { data: product, isLoading } = api.stock.getById.useQuery({ id });
-
-  const { data, isLoading } = api.stock.getByIdWithEquivalents.useQuery({ id });
+  const { data, isLoading, isFetching, isError, error } =
+    api.stock.getByIdWithEquivalents.useQuery(
+      { id },
+      {
+        staleTime: 2 * 60 * 1000,
+        enabled: !!id,
+        // @ts-expect-error: keepPreviousData is a TanStack Query option
+        keepPreviousData: true,
+      }
+    );
 
   const { product, equivalents } = data ?? {};
 
@@ -32,12 +40,13 @@ export default function ProductDetailPage() {
     );
   }
 
-  if (!product) {
+  if (isError || !product) {
     return (
       <Container sx={{ py: 3 }}>
-        <Typography variant="h4" color="error">
-          Producto no encontrado
-        </Typography>
+        <Alert severity="error">
+          Error al cargar producto:{" "}
+          {error instanceof Error ? error.message : "Error desconocido"}
+        </Alert>
       </Container>
     );
   }
@@ -90,6 +99,13 @@ export default function ProductDetailPage() {
           currentStock={Number(product.stockQuantity) || 0}
         />
       </Paper>
+
+      {/* Show background loading indicator */}
+      {isFetching && !isLoading && (
+        <Box sx={{ position: "fixed", top: 16, right: 16 }}>
+          <CircularProgress size={24} />
+        </Box>
+      )}
     </Container>
   );
 }

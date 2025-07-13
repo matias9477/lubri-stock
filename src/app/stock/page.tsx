@@ -8,6 +8,7 @@ import {
   CircularProgress,
   TextField,
   InputAdornment,
+  Alert,
 } from "@mui/material";
 import { Search } from "@mui/icons-material";
 import { api } from "@/trpc/react";
@@ -43,38 +44,60 @@ export default function StockPage() {
   const {
     data: productsData,
     isLoading,
-    refetch,
-  } = api.stock.getAll.useQuery({
-    page,
-    pageSize,
-    sortBy: "name",
-    sortOrder: "asc",
-    search: debouncedSearchTerm || undefined,
-  });
+    isFetching,
+    isError,
+    error,
+  } = api.stock.getAll.useQuery(
+    {
+      page,
+      pageSize,
+      sortBy: "name",
+      sortOrder: "asc",
+      search: debouncedSearchTerm || undefined,
+    },
+    {
+      // @ts-expect-error: keepPreviousData is a TanStack Query option
+      keepPreviousData: true,
+      staleTime: 2 * 60 * 1000,
+      enabled: page >= 0 && pageSize > 0,
+      onError: (error: unknown) => {
+        // eslint-disable-next-line no-console
+        console.error("Failed to fetch products:", error);
+      },
+    }
+  );
 
   const router = useRouter();
-  const utils = api.useUtils();
 
   const products = productsData?.data ?? [];
   const pagination = productsData?.pagination;
 
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
-    // Invalidate the query to ensure fresh data
-    utils.stock.getAll.invalidate();
+    // No need to invalidate, TanStack Query will refetch automatically
   };
 
   const handlePageSizeChange = (newPageSize: number) => {
     setPageSize(newPageSize);
-    setPage(0); // Reset to first page when changing page size
-    // Invalidate the query to ensure fresh data
-    utils.stock.getAll.invalidate();
+    setPage(0);
+    // No need to invalidate
   };
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
-    setPage(0); // Reset to first page when searching
+    setPage(0);
   };
+
+  if (isError) {
+    return (
+      <Container maxWidth="lg" sx={{ py: 3 }}>
+        <Alert severity="error">
+          Error al cargar productos:{" "}
+          {error instanceof Error ? error.message : "Error desconocido"}
+        </Alert>
+      </Container>
+    );
+  }
 
   return (
     <Container maxWidth="lg" sx={{ py: 3 }}>
@@ -139,6 +162,13 @@ export default function StockPage() {
             onPageSizeChange: handlePageSizeChange,
           }}
         />
+      )}
+
+      {/* Show background loading indicator */}
+      {isFetching && !isLoading && (
+        <Box sx={{ position: "fixed", top: 16, right: 16 }}>
+          <CircularProgress size={24} />
+        </Box>
       )}
     </Container>
   );
