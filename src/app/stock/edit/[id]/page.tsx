@@ -115,7 +115,7 @@ export default function EditProductPage() {
       />
 
       <Box sx={{ mt: 3 }}>
-        <Button variant="contained" onClick={() => router.push("/stock")}>
+        <Button variant="contained" onClick={() => router.back()}>
           Volver
         </Button>
       </Box>

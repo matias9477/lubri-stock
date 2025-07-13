@@ -15,6 +15,9 @@ export function normalizeProductDefaults(
     installedPrice: product.installedPrice ? Number(product.installedPrice) : 0,
     notes: product.notes ?? "",
     dimensions: product.dimensions ?? 0,
-    equivalentIds: equivalents.map((e) => e.equivalentProductId),
+    equivalentIds: equivalents.map((e) => {
+      // Determine which product ID is the "other" product (not the current product)
+      return e.productId === product.id ? e.equivalentProductId : e.productId;
+    }),
   };
 }

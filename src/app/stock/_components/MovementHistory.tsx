@@ -97,10 +97,12 @@ export const MovementHistory = ({
   const movements =
     movementsData?.data?.map((movement) => ({
       id: movement.id,
-      quantity: movement.quantity || 0,
+      quantity: Number(movement.quantity) || 0,
       movementType: movement.movementType || "",
       reason: movement.reason || "",
-      date: movement.date || new Date().toISOString(),
+      date: movement.date
+        ? new Date(movement.date).toISOString()
+        : new Date().toISOString(),
       product: movement.product || { id: "", name: "", code: null },
     })) ?? [];
   const pagination = movementsData?.pagination;
@@ -120,14 +122,30 @@ export const MovementHistory = ({
       headerName: "Fecha",
       flex: 1,
       minWidth: 150,
-      valueFormatter: (params: { value: any }) => {
-        return new Date(params.value).toLocaleDateString("es-ES", {
-          year: "numeric",
-          month: "2-digit",
-          day: "2-digit",
-          hour: "2-digit",
-          minute: "2-digit",
+      renderCell: (params) => {
+        console.log("Date renderCell:", {
+          value: params.value,
+          type: typeof params.value,
         });
+        try {
+          const date = new Date(params.value);
+          console.log("Parsed date:", date, "isValid:", !isNaN(date.getTime()));
+          if (isNaN(date.getTime())) {
+            return "Fecha inválida";
+          }
+          const formatted = date.toLocaleDateString("es-ES", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+          });
+          console.log("Formatted date:", formatted);
+          return formatted;
+        } catch (error) {
+          console.error("Date formatting error:", error, params.value);
+          return "Fecha inválida";
+        }
       },
     },
     {
@@ -135,7 +153,11 @@ export const MovementHistory = ({
       headerName: "Tipo",
       flex: 1,
       minWidth: 120,
-      valueFormatter: (params: { value: any }) => {
+      renderCell: (params) => {
+        console.log("Movement type renderCell:", {
+          value: params.value,
+          label: movementTypeLabels[params.value],
+        });
         return movementTypeLabels[params.value] || params.value;
       },
     },
@@ -144,14 +166,17 @@ export const MovementHistory = ({
       headerName: "Cantidad",
       flex: 1,
       minWidth: 100,
-      type: "number",
-      valueFormatter: (params: { value: any }) => {
-        const value = params.value as number;
-        return value > 0 ? `+${value}` : `${value}`;
-      },
-      cellClassName: (params) => {
-        const value = params.value as number;
-        return value > 0 ? "positive-quantity" : "negative-quantity";
+      renderCell: (params) => {
+        const value = Number(params.value) || 0;
+        console.log("Quantity renderCell:", {
+          original: params.value,
+          converted: value,
+        });
+        return (
+          <span style={{ color: value > 0 ? "green" : "red" }}>
+            {value > 0 ? `+${value}` : `${value}`}
+          </span>
+        );
       },
     },
     {
@@ -187,6 +212,9 @@ export const MovementHistory = ({
       </Alert>
     );
   }
+
+  console.log("movements", movements);
+  console.log("movementTypeLabels", movementTypeLabels);
 
   return (
     <Box>
