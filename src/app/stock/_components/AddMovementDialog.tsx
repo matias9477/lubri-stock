@@ -43,6 +43,9 @@ export const AddMovementDialog = ({
   const [date, setDate] = useState<string>(
     new Date().toISOString().split("T")[0]
   );
+  const [time, setTime] = useState<string>(
+    new Date().toTimeString().slice(0, 5)
+  );
 
   const utils = api.useUtils();
 
@@ -53,6 +56,7 @@ export const AddMovementDialog = ({
     onSuccess: () => {
       utils.stock.getAll.invalidate();
       utils.stock.getById.invalidate({ id: productId });
+      utils.stock.getMovements.invalidate({ productId });
       onSuccess?.();
       handleClose();
     },
@@ -63,6 +67,7 @@ export const AddMovementDialog = ({
     setMovementType("");
     setReason("");
     setDate(new Date().toISOString().split("T")[0]);
+    setTime(new Date().toTimeString().slice(0, 5));
     onClose();
   };
 
@@ -82,7 +87,23 @@ export const AddMovementDialog = ({
       quantity: finalQuantity,
       movementType,
       reason,
-      date: date ? new Date(date).toISOString() : undefined,
+      date:
+        date && time
+          ? (() => {
+              // Create date with the actual selected date and time
+              const [year, month, day] = date.split("-").map(Number);
+              const [hours, minutes] = time.split(":").map(Number);
+              const localDate = new Date(
+                year,
+                month - 1,
+                day,
+                hours,
+                minutes,
+                0
+              );
+              return localDate.toISOString();
+            })()
+          : undefined,
     });
   };
 
@@ -161,14 +182,24 @@ export const AddMovementDialog = ({
             rows={2}
           />
 
-          <TextField
-            label="Fecha"
-            type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            fullWidth
-            InputLabelProps={{ shrink: true }}
-          />
+          <Box sx={{ display: "flex", gap: 2 }}>
+            <TextField
+              label="Fecha"
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              fullWidth
+              InputLabelProps={{ shrink: true }}
+            />
+            <TextField
+              label="Hora"
+              type="time"
+              value={time}
+              onChange={(e) => setTime(e.target.value)}
+              fullWidth
+              InputLabelProps={{ shrink: true }}
+            />
+          </Box>
 
           {quantityNum !== 0 && (
             <Box sx={{ mt: 1 }}>
