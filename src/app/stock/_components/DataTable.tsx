@@ -18,8 +18,13 @@ type Props<TData> = {
 export function DataTable<TData>({ data, columns, pagination }: Props<TData>) {
   const handlePaginationModelChange = (model: GridPaginationModel) => {
     if (pagination) {
-      pagination.onPageChange(model.page);
-      pagination.onPageSizeChange(model.pageSize);
+      // Only call the appropriate function based on what changed
+      if (model.page !== pagination.page) {
+        pagination.onPageChange(model.page);
+      }
+      if (model.pageSize !== pagination.pageSize) {
+        pagination.onPageSizeChange(model.pageSize);
+      }
     }
   };
 
