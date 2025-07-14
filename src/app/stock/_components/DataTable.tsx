@@ -45,7 +45,7 @@ export function DataTable<TData>({ data, columns, pagination }: Props<TData>) {
         paginationModel={paginationModel}
         rowCount={pagination?.rowCount ?? data.length}
         onPaginationModelChange={handlePaginationModelChange}
-        pageSizeOptions={[5, 10, 25, 50]}
+        pageSizeOptions={[10, 25, 50]}
         disableRowSelectionOnClick
         sx={{
           "& .MuiDataGrid-cell:focus": {
